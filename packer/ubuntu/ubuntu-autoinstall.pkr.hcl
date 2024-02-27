@@ -26,7 +26,7 @@ source "qemu" "ubuntu" {
   disk_compression  = false
   disk_discard      = "unmap"
   disk_interface    = "virtio"
-  disk_size         = 1
+  disk_size         = 10000
   firmware          = "/usr/share/ovmf/OVMF.fd"
   format            = "qcow2"
   headless          = true
@@ -74,7 +74,6 @@ build {
   }
 
   # cleanup and compress the image
-  # TODO: this requires local sudo privileges
   post-processor "shell-local" {
     inline = [
       "virt-sysprep -a ${var.build_dir}/${var.build_name}/${var.image_name}",

@@ -36,6 +36,7 @@ autoinstall:
         path: /dev/vda
         wipe: superblock-recursive
         preserve: false
+
       - type: partition
         id: boot-partition
         device: disk0
@@ -61,6 +62,7 @@ autoinstall:
         partition_type: 8300
         wipe: superblock
         preserve: false
+
       - type: format
         id: boot-partition-fs
         volume: boot-partition
@@ -76,6 +78,7 @@ autoinstall:
         volume: data-partition
         label: data
         fstype: xfs
+
       # When entries are created in /etc/fstab, curtin will use the most reliable method available to identify each device.
       # For regular partitions, curtin will use the UUID of the filesystem present on the partition.
       - type: mount
