@@ -1,0 +1,124 @@
+#cloud-config
+# https://ubuntu.com/server/docs/install/autoinstall-reference
+# https://cloudinit.readthedocs.io/en/latest/topics/modules.html
+autoinstall:
+  # Hint: enable interactive sessions for debugging purposes
+  #interactive-sections:
+  #  - storage
+  version: 1
+  refresh-installer:
+  update: yes
+  early-commands:
+    - systemctl stop ssh
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  apt:
+    preserve_sources_list: false
+    primary:
+        - arches: [amd64]
+          uri: "http://archive.ubuntu.com/ubuntu"
+        - arches: [default]
+          uri: "http://ports.ubuntu.com/ubuntu-ports"
+    geoip: true
+  storage:
+    version: 2
+    swap:
+      size: 0
+    # this is required for UEFI install, so reboot boots from disk, not CDROM
+    grub:
+      reorder_uefi: false
+    # https://curtin.readthedocs.io/en/latest/topics/storage.html#basic-layout
+    config:
+      - type: disk
+        id: disk0
+        ptable: gpt
+        path: /dev/vda
+        wipe: superblock-recursive
+        preserve: false
+      - type: partition
+        id: boot-partition
+        device: disk0
+        size: 512M
+        flag: boot
+        # see https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
+        partition_type: EF00
+        wipe: superblock
+        preserve: false
+        # GPT requires this on the efi partition
+        grub_device: true
+      - type: partition
+        id: root-partition
+        device: disk0
+        size: 8G
+        partition_type: 8300
+        wipe: superblock
+        preserve: false
+      - type: partition
+        id: data-partition
+        device: disk0
+        size: -1
+        partition_type: 8300
+        wipe: superblock
+        preserve: false
+      - type: format
+        id: boot-partition-fs
+        volume: boot-partition
+        label: efi
+        fstype: fat
+      - type: format
+        id: root-partition-fs
+        volume: root-partition
+        label: root
+        fstype: ext4
+      - type: format
+        id: data-partition-fs
+        volume: data-partition
+        label: data
+        fstype: xfs
+      # When entries are created in /etc/fstab, curtin will use the most reliable method available to identify each device.
+      # For regular partitions, curtin will use the UUID of the filesystem present on the partition.
+      - type: mount
+        id: boot-partition-mount
+        device: boot-partition-fs
+        path: /boot/efi
+      - type: mount
+        id: root-partition-mount
+        device: root-partition-fs
+        path: /
+      - type: mount
+        id: data-partition-mount
+        device: data-partition-fs
+        path: /data
+  identity:
+    hostname: ubuntu2204
+    username: ubuntu
+    # echo "packer" | openssl passwd -6 -stdin
+    password: $6$g0/WJj5hfgj0kXlg$AOPpDYcTN0QZL8xk2PI7VJlUsFTQb683mbS1yZvUZ1zjEx1KpCUP6ADkMEPOjYFUUp86KbmlFkdtO9vE8.mFQ0
+  ssh:
+    allow-pw: true
+    authorized-keys: []
+    install-server: true
+  network:
+    version: 2
+    ethernets:
+      eth:
+        match:
+          name: "en*"
+        dhcp4: yes
+  late-commands:
+    - "echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu"
+    - "chmod 440 /target/etc/sudoers.d/ubuntu"
+    # reference filesystems by LABEL, UUIDs change for VMs
+    - |-
+      cat <<EOF >> /target/etc/default/grub
+      GRUB_DISABLE_LINUX_UUID=true
+      GRUB_DEVICE=LABEL=root
+      EOF
+    - |-
+      cat <<EOF > /target/etc/fstab
+      LABEL=root /         ext4 defaults 0 1
+      LABEL=data /data     xfs  defaults 0 1
+      LABEL=efi  /boot/efi vfat defaults 0 1
+      EOF
+    - "curtin in-target --target=/target -- update-grub"
