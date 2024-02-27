@@ -79,9 +79,6 @@ build {
       "virt-sysprep -a ${var.build_dir}/${var.build_name}/${var.image_name}",
       "qemu-img convert -W -c -O qcow2 ${var.build_dir}/${var.build_name}/${var.image_name} ${var.output_dir}/${var.image_name}.qcow2",
       "rm -rf ${var.build_dir}/${var.build_name}",
-      # generate pkrvars for a build referencing this image (url + checksum)
-      "checksum=$(sha256sum ${var.output_dir}/${var.image_name}.qcow2 | awk '{print $1}')",
-      "echo 'iso_url = \"${var.output_dir}/${var.image_name}.qcow2\"\niso_checksum = \"'sha256:$checksum'\"' > packer/linux/${var.image_name}.pkrvars.hcl"
     ]
   }
 }
