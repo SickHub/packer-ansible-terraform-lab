@@ -63,8 +63,8 @@ build {
   provisioner "shell" {
     inline = [
       # retries due to apt-lock
-      "for i in $(seq 1 5); do sudo apt-get autoremove -y && break; sleep 3; done",
-      "for i in $(seq 1 5); do sudo apt-get clean -y && break; sleep 3; done",
+      "for i in $(seq 1 5); do sudo apt-get autoremove -y && break; sleep 5; done",
+      "for i in $(seq 1 5); do sudo apt-get clean -y && break; sleep 5; done",
       "sudo rm -rf /var/lib/apt/lists/*",
       "sudo rm -rf /tmp/*",
       "sudo rm -rf /var/tmp/*",
