@@ -9,8 +9,8 @@ packer {
 
 variables {
   # iso_url      = "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img"
-  iso_url      = "/data/runner/isos/ubuntu-22.04-server-cloudimg-amd64.img"
-  iso_checksum = "sha256:7eb9f1480956af75359130cd41ba24419d6fd88d3af990ea9abe97c2f9459fda"
+  iso_url      = "/data2/runner/images/Ubuntu2204-Server-cloudimg.img"
+  iso_checksum = "sha256:3f48ed24115b50a6f48a3915d9b661388767cd8b6c42bdebfc3ea2cdda235100"
   build_dir    = "/data/runner/build"
   build_name   = "cloudimg-gitlab-runner"
   output_dir   = "/data/runner/images"
