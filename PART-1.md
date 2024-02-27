@@ -4,7 +4,7 @@ Hint: I use `/data2/runner/images` as location for my images and `/data2/vms` fo
 
 ## Build an Ubuntu image from installer ISO with `autoinstall`
 
-Takes around ~6 minutes on an i7 with SSDs (excluding download)
+Takes ~6 minutes on an i7 with SSDs (excluding download), resulting image: 1.9 GB
 
 ```shell
 packer build -var-file=packer/ubuntu/ubuntu2204-autoinstall.pkrvars.hcl packer/ubuntu/ubuntu-autoinstall.pkr.hcl
@@ -12,7 +12,7 @@ packer build -var-file=packer/ubuntu/ubuntu2204-autoinstall.pkrvars.hcl packer/u
 
 ## Build an Ubuntu image from cloud image with `cloud-init`
 
-Takes around ~1 minutes on an i7 with SSDs (excluding download)
+Takes ~1 minute on an i7 with SSDs (excluding download), resulting image: 655 MB
 
 ```shell
 packer build -var-file=packer/ubuntu/ubuntu2204-cloudimg.pkrvars.hcl packer/ubuntu/ubuntu-cloudimg.pkr.hcl
