@@ -1,5 +1,7 @@
 # Build images with `packer`
 
+Hint: I use `/data2/runner/images` as location for my images and `/data2/vms` for VMs, you will need to adjust this to your setup.
+
 ## Build an Ubuntu image from installer ISO with `autoinstall`
 
 Takes around ~6 minutes on an i7 with SSDs (excluding download)
